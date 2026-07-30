@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { CalendarDays, Clock, Loader2, FileText, CheckCircle2, X, CreditCard, Wallet } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
@@ -17,7 +17,7 @@ interface Appointment {
   doctorId: { name: string; email: string };
 }
 
-export default function PatientAppointmentsPage() {
+function AppointmentsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -30,7 +30,7 @@ export default function PatientAppointmentsPage() {
 
   const fetchAppointments = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
       const res = await fetch(`${apiUrl}/appointments`, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -258,5 +258,14 @@ export default function PatientAppointmentsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+// 💡 মেইন কম্পোনেন্টকে Suspense দিয়ে Wrap করে দেওয়া হলো
+export default function PatientAppointmentsPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-blue-600" /></div>}>
+      <AppointmentsContent />
+    </Suspense>
   );
 }
