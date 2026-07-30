@@ -33,7 +33,7 @@ export default function FindDoctorPage() {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
         // Note: যদি এই পেজটি পাবলিক হয়, তবে টোকেন ছাড়াই API কল করা যেতে পারে (ব্যাকএন্ডের ওপর নির্ভরশীল)
         const token = localStorage.getItem('token'); 
-        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+        const headers: Record<string, string> = token ? { 'Authorization': `Bearer ${token}` } : {};
 
         const res = await fetch(`${apiUrl}/users/doctors`, { headers });
         if (res.ok) {
