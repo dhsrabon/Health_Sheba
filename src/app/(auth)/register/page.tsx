@@ -32,7 +32,7 @@ export default function RegisterPage() {
 
     try {
       // 🔗 এখানে ব্যাকএন্ডের সঠিক লিংক বসানো হয়েছে
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+      const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

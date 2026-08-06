@@ -36,7 +36,7 @@ export default function SymptomCheckerPage() {
 
     try {
       // 🟢 সরাসরি লোকালহোস্ট লিংক দেওয়া হলো, যাতে .env এর কারণে কোনো কনফিউশন না হয়
-      const res = await fetch('http://localhost:5000/api/ai/analyze', {
+      const res = await fetch('https://healthsheba-server.vercel.app/api/ai/analyze', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

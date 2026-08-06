@@ -33,7 +33,7 @@ export default function StaffDashboard() {
   useEffect(() => {
     const fetchPendingAppointments = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/appointments/pending');
+        const res = await fetch('https://healthsheba-server.vercel.app/api/appointments/pending');
         if (res.ok) {
           const data = await res.json();
           setRequests(data);
@@ -49,7 +49,7 @@ export default function StaffDashboard() {
 
   const handleApprove = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/appointments/${id}/status`, {
+      const res = await fetch(`https://healthsheba-server.vercel.app/api/appointments/${id}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'Approved' })
@@ -73,7 +73,7 @@ export default function StaffDashboard() {
     if (!rejectReason.trim() || !selectedRequest) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/appointments/${selectedRequest}/status`, {
+      const res = await fetch(`https://healthsheba-server.vercel.app/api/appointments/${selectedRequest}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'Rejected', reason: rejectReason })

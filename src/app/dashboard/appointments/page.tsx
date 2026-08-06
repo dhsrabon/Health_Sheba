@@ -31,7 +31,7 @@ function AppointmentsContent() {
   const fetchAppointments = async () => {
     try {
       const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://healthsheba-server.vercel.app/api';
       const res = await fetch(`${apiUrl}/appointments`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -62,7 +62,7 @@ function AppointmentsContent() {
         const savePaidAppointment = async () => {
           try {
             const token = localStorage.getItem('token');
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://healthsheba-server.vercel.app/api';
             await fetch(`${apiUrl}/appointments`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -86,7 +86,7 @@ function AppointmentsContent() {
       const clearDuePayment = async () => {
         try {
           const token = localStorage.getItem('token');
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://healthsheba-server.vercel.app/api';
           await fetch(`${apiUrl}/appointments/${appId}/payment-status`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
@@ -107,7 +107,7 @@ function AppointmentsContent() {
     setIsPayingDue(appointmentId);
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://healthsheba-server.vercel.app/api';
       
       const res = await fetch(`${apiUrl}/payments/pay-due`, {
         method: 'POST',
@@ -135,7 +135,7 @@ function AppointmentsContent() {
     setIsPayingDue(appointmentId);
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://healthsheba-server.vercel.app/api';
       
       const res = await fetch(`${apiUrl}/appointments/${appointmentId}/pay-cash`, {
         method: 'PATCH',

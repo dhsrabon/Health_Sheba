@@ -23,7 +23,7 @@ export default function SmartDashboardPage() {
     const fetchDashboardData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://healthsheba-server.vercel.app/api';
         const headers = { 'Authorization': `Bearer ${token}` };
 
         const profileRes = await fetch(`${apiUrl}/users/profile`, { headers });
@@ -106,7 +106,7 @@ export default function SmartDashboardPage() {
     if(!confirm(`Are you sure you want to ${newStatus} this doctor?`)) return;
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://healthsheba-server.vercel.app/api';
       const res = await fetch(`${apiUrl}/users/doctor-status/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -122,7 +122,7 @@ export default function SmartDashboardPage() {
     if(!confirm(`Mark this appointment as ${newStatus}?`)) return;
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://healthsheba-server.vercel.app/api';
       const res = await fetch(`${apiUrl}/appointments/${apptId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -188,7 +188,7 @@ export default function SmartDashboardPage() {
                 <ClipboardList className="w-5 h-5 text-blue-600" /> My Appointments
               </h2>
             </div>
-            <div className="p-6 space-y-4 flex-1 overflow-y-auto max-h-[400px]">
+            <div className="p-6 space-y-4 flex-1 overflow-y-auto max-h-100">
               {recentBookings.length === 0 ? <p className="text-center text-gray-500 py-10">You have no appointments yet.</p> : recentBookings.map((appt) => (
                 <div key={appt._id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 gap-4">
                   <div className="flex items-center gap-4">
@@ -213,7 +213,7 @@ export default function SmartDashboardPage() {
                 View All
               </button>
             </div>
-            <div className="p-6 space-y-4 flex-1 overflow-y-auto max-h-[400px]">
+            <div className="p-6 space-y-4 flex-1 overflow-y-auto max-h-100">
               {recentRx.length === 0 ? (
                 <p className="text-center text-gray-500 py-10">No prescriptions received yet.</p>
               ) : (
@@ -280,7 +280,7 @@ export default function SmartDashboardPage() {
                 <ClipboardList className="w-5 h-5 text-blue-600" /> Today's Schedule
               </h2>
             </div>
-            <div className="p-6 space-y-4 flex-1 overflow-y-auto max-h-[400px]">
+            <div className="p-6 space-y-4 flex-1 overflow-y-auto max-h-100">
               {recentBookings.length === 0 ? (
                 <p className="text-center text-gray-500 py-10">No appointments scheduled for today.</p>
               ) : (
@@ -391,7 +391,7 @@ export default function SmartDashboardPage() {
               <UserPlus className="w-5 h-5 text-blue-600" /> Pending Approvals
             </h2>
           </div>
-          <div className="p-6 space-y-4 flex-1 overflow-y-auto max-h-[400px]">
+          <div className="p-6 space-y-4 flex-1 overflow-y-auto max-h-100">
             {pendingDoctors.length === 0 ? <p className="text-center text-gray-500 py-10">No pending requests right now.</p> : pendingDoctors.map(doc => (
               <div key={doc._id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 gap-4">
                 <div className="flex items-center gap-4">
@@ -420,7 +420,7 @@ export default function SmartDashboardPage() {
               <Clock className="w-5 h-5 text-purple-600" /> Recent Bookings
             </h2>
           </div>
-          <div className="p-6 space-y-4 flex-1 overflow-y-auto max-h-[400px]">
+          <div className="p-6 space-y-4 flex-1 overflow-y-auto max-h-100">
             {recentBookings.length === 0 ? (
               <p className="text-center text-gray-500 py-10">No recent bookings found.</p>
             ) : (

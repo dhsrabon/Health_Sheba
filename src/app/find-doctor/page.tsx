@@ -28,11 +28,10 @@ export default function FindDoctorPage() {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
         const token = localStorage.getItem('token'); 
         const headers: Record<string, string> = token ? { 'Authorization': `Bearer ${token}` } : {};
 
-        const res = await fetch(`${apiUrl}/users/doctors`, { headers });
+        const res = await fetch('/api/users?role=doctor', { headers });
         if (res.ok) {
           const data = await res.json();
           setDoctors(data);

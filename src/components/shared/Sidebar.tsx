@@ -28,7 +28,7 @@ export default function Sidebar() {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://healthsheba-server.vercel.app/api';
         const res = await fetch(`${apiUrl}/users/profile`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });

@@ -26,7 +26,7 @@ export default function PatientRecordsPage() {
   const fetchMyRecords = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/records/my', {
+      const res = await fetch('https://healthsheba-server.vercel.app/api/records/my', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -62,7 +62,7 @@ export default function PatientRecordsPage() {
     setIsUploading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/records/upload', {
+      const res = await fetch('https://healthsheba-server.vercel.app/api/records/upload', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

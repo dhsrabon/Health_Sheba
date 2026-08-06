@@ -30,8 +30,8 @@ export default function LoginPage() {
 
     try {
       // 🔗 আপডেট করা হলো: ব্যাকএন্ডের (Express) সঠিক লিংকে রিকোয়েস্ট পাঠানো হচ্ছে
-      // যদি .env ফাইল কাজ না করে, সেফটির জন্য ডিফল্ট http://localhost:5000/api দেওয়া হয়েছে
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      // যদি .env ফাইল কাজ না করে, সেফটির জন্য ডিফল্ট ডিপ্লয়ড backend ব্যবহার করা হচ্ছে
+      const apiUrl = '/api';
       
       const res = await fetch(`${apiUrl}/auth/login`, {
         method: 'POST',

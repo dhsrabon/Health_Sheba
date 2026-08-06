@@ -21,8 +21,7 @@ export default function TopDoctors() {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-        const res = await fetch(`${apiUrl}/users/doctors`);
+        const res = await fetch('/api/users?role=doctor');
         if (res.ok) {
           const data = await res.json();
           setDoctors(data);

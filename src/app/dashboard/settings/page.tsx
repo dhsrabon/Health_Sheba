@@ -27,7 +27,7 @@ export default function SettingsPage() {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem('token');
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://healthsheba-server.vercel.app/api';
         
         const res = await fetch(`${apiUrl}/users/profile`, {
           headers: { 'Authorization': `Bearer ${token}` }
@@ -99,7 +99,7 @@ export default function SettingsPage() {
     setIsSaving(true);
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://healthsheba-server.vercel.app/api';
       
       const payload = {
         name, phone, image, specialty, hospitalName, consultationFee,

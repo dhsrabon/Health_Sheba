@@ -33,9 +33,7 @@ export default function BookAppointmentPage() {
     const fetchDoctors = async () => {
       try {
         const token = localStorage.getItem('token');
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-        
-        const res = await fetch(`${apiUrl}/users/doctors`, {
+        const res = await fetch('/api/users?role=doctor', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -89,7 +87,6 @@ export default function BookAppointmentPage() {
     setIsSubmitting(true);
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
       
       const totalFee = selectedDoctorInfo?.consultationFee || 500;
       const advancePayment = totalFee * 0.20; // ২০% অগ্রিম
@@ -108,7 +105,7 @@ export default function BookAppointmentPage() {
       }));
 
       // পেমেন্ট রিকোয়েস্ট পাঠানো
-      const res = await fetch(`${apiUrl}/payments/create-checkout-session`, {
+      const res = await fetch('https://healthsheba-server.vercel.app/api/payments/create-checkout-session', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

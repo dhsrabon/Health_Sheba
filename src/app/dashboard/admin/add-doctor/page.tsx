@@ -78,7 +78,7 @@ export default function AddDoctorPage() {
 
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://healthsheba-server.vercel.app/api';
 
       // 🟢 JSON হিসেবেই ডাটা যাচ্ছে (কোনো এরর আসবে না!)
       const res = await fetch(`${apiUrl}/users/add-doctor`, {

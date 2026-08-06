@@ -40,7 +40,7 @@ export default function PrescriptionsPage() {
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://healthsheba-server.vercel.app/api';
       const headers = { 'Authorization': `Bearer ${token}` };
 
       const profileRes = await fetch(`${apiUrl}/users/profile`, { headers });
@@ -102,7 +102,7 @@ export default function PrescriptionsPage() {
     setIsSaving(true);
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://healthsheba-server.vercel.app/api';
       
       const payload = {
         patientId: selectedPatientId,

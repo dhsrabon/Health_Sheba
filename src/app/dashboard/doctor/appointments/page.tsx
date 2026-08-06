@@ -21,7 +21,7 @@ export default function DoctorAppointmentsPage() {
     const fetchAppointments = async () => {
       try {
         const token = localStorage.getItem('token');
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://healthsheba-server.vercel.app/api';
         
         const res = await fetch(`${apiUrl}/appointments`, {
           headers: { 'Authorization': `Bearer ${token}` }
@@ -45,7 +45,7 @@ export default function DoctorAppointmentsPage() {
     setUpdatingId(apptId);
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://healthsheba-server.vercel.app/api';
 
       const res = await fetch(`${apiUrl}/appointments/${apptId}/status`, {
         method: 'PUT',

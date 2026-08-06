@@ -37,7 +37,7 @@ export default function StaffPatientsRecordPage() {
 
   const fetchPatients = useCallback(async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/patients');
+      const res = await fetch('https://healthsheba-server.vercel.app/api/patients');
       if (res.ok) {
         const data = await res.json();
         setPatients(data);
@@ -59,7 +59,7 @@ export default function StaffPatientsRecordPage() {
     setAmount('Loading...'); 
 
     try {
-      const res = await fetch(`http://localhost:5000/api/patients/${patient._id}/due`);
+      const res = await fetch(`https://healthsheba-server.vercel.app/api/patients/${patient._id}/due`);
       if (res.ok) {
         const data = await res.json();
         setAmount(data.totalDue > 0 ? data.totalDue.toString() : '');
@@ -122,7 +122,7 @@ export default function StaffPatientsRecordPage() {
     setIsUploading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/records/upload', {
+      const res = await fetch('https://healthsheba-server.vercel.app/api/records/upload', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

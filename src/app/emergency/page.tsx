@@ -26,7 +26,7 @@ export default function EmergencyPage() {
   useEffect(() => {
     const fetchAllDoctors = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/doctors');
+        const res = await fetch('/api/users?role=doctor');
         if (res.ok) {
           const data = await res.json();
           setDoctors(data); // ডাটাবেসের সব ডাক্তার এখানে সেভ হচ্ছে
