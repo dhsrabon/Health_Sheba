@@ -10,7 +10,9 @@ import {
   Settings, 
   LogOut, 
   HeartPulse,
-  Users
+  Users,
+  UserPlus,
+  CalendarPlus
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -34,7 +36,6 @@ export default function Sidebar() {
         if (res.ok) {
           const data = await res.json();
           setUserName(data.name);
-          // রোলটি ছোট হাতের অক্ষরে সেভ করছি যাতে চেক করতে সুবিধা হয়
           setUserRole(data.role?.toLowerCase() || ''); 
         }
       } catch (error) {
@@ -50,23 +51,31 @@ export default function Sidebar() {
     router.push('/login');
   };
 
-  // 🟢 ইউজার রোল অনুযায়ী ডাইনামিক মেনু তৈরি করা হচ্ছে
   const getSidebarLinks = () => {
-    // যদি ইউজার স্টাফ হয় (আপনার স্ক্রিনশটে বানান stuff ছিল, তাই দুটোর জন্যই চেক রাখা হলো)
-    if (userRole === 'staff' || userRole === 'stuff') {
+    if (userRole === 'admin') {
       return [
         { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
         { name: 'Appointments', href: '/dashboard/appointments', icon: CalendarCheck },
-        { name: 'Patient Records', href: '/dashboard/staff/patients', icon: Users }, // স্টাফদের নতুন পেজ
+        { name: 'Add Doctor', href: '/dashboard/admin/add-doctor', icon: UserPlus },
+        { name: 'Medical Records', href: '/dashboard/records', icon: FileText },
         { name: 'Settings', href: '/dashboard/settings', icon: Settings },
       ];
     }
 
-    // 🟢 যদি ইউজার পেশেন্ট বা অন্য কেউ হয় (ডিফল্ট মেনু)
+    if (userRole === 'staff' || userRole === 'stuff') {
+      return [
+        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+        { name: 'Appointments', href: '/dashboard/appointments', icon: CalendarCheck },
+        { name: 'Patient Records', href: '/dashboard/staff/patients', icon: Users }, 
+        { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+      ];
+    }
+
     return [
       { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+      { name: 'Book Appointment', href: '/dashboard/patient', icon: CalendarPlus },
       { name: 'Appointments', href: '/dashboard/appointments', icon: CalendarCheck },
-      { name: 'Medical Records', href: '/dashboard/records', icon: FileText }, // পেশেন্টদের পেজ
+      { name: 'Medical Records', href: '/dashboard/records', icon: FileText }, 
       { name: 'Prescriptions', href: '/dashboard/patient/prescriptions', icon: FileText },
       { name: 'Settings', href: '/dashboard/settings', icon: Settings },
     ];

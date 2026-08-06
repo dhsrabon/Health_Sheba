@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { Star, Building2, Calendar, ArrowRight, Loader2, Stethoscope } from 'lucide-react';
-import { useRouter } from 'next/navigation'; // 🔴 রিডাইরেক্ট করার জন্য ইমপোর্ট করা হলো
+import { useRouter } from 'next/navigation';
 
 interface Doctor {
   _id: string;
   name: string;
+  image?: string;
   specialty?: string;
   hospitalName?: string;
   chamberNo?: string;
@@ -15,9 +16,8 @@ interface Doctor {
 export default function TopDoctors() {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter(); // 🔴 রাউটার ইনিশিয়ালাইজ
+  const router = useRouter();
 
-  // 🔄 ডাটাবেজ থেকে রিয়েল অ্যাপ্রুভড ডাক্তারদের নিয়ে আসা
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
@@ -37,14 +37,11 @@ export default function TopDoctors() {
     fetchDoctors();
   }, []);
 
-  // 🛡️ লগইন স্ট্যাটাস চেক করে রাউটিং করার ফাংশন
   const handleBookingClick = () => {
     const token = localStorage.getItem('token');
     if (token) {
-      // টোকেন থাকলে সরাসরি বুকিং পেজে যাবে
       router.push('/dashboard/patient/book-appointment');
     } else {
-      // টোকেন না থাকলে লগইন পেজে যাবে
       router.push('/login');
     }
   };
@@ -57,7 +54,7 @@ export default function TopDoctors() {
           <p className="text-gray-500 text-sm mt-1">Find and book appointments with our highly recommended doctors.</p>
         </div>
         <button 
-          onClick={handleBookingClick}
+          onClick={() => router.push('/find-doctor')}
           className="text-blue-600 hover:text-blue-700 font-semibold text-sm flex items-center gap-1 transition-colors bg-transparent border-none cursor-pointer"
         >
           See all doctors <ArrowRight className="w-4 h-4" />
@@ -81,18 +78,22 @@ export default function TopDoctors() {
             return (
               <div 
                 key={doc._id} 
-                className="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all p-6 flex flex-col items-center text-center justify-between"
+                className="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-6 flex flex-col items-center text-center justify-between group"
               >
-                <div>
-                  <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl font-bold uppercase mx-auto mb-4">
-                    {initials}
+                <div className="w-full">
+                  <div className="relative w-24 h-24 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-3xl font-black uppercase mx-auto mb-4 overflow-hidden border-4 border-white shadow-md">
+                    {doc.image ? (
+                      <img src={doc.image} alt={doc.name} className="w-full h-full object-cover object-top" />
+                    ) : (
+                      initials
+                    )}
                   </div>
 
-                  <h3 className="font-bold text-lg text-gray-900">
+                  <h3 className="font-bold text-lg text-gray-900 group-hover:text-blue-600 transition-colors">
                     Dr. {doc.name.replace(/^Dr\.\s*/i, '')}
                   </h3>
 
-                  <p className="text-sm text-blue-600 font-medium mt-0.5">
+                  <p className="text-sm text-blue-600 font-semibold mt-0.5">
                     {doc.specialty || 'General Specialist'}
                   </p>
 
@@ -101,17 +102,16 @@ export default function TopDoctors() {
                     <span>4.8</span>
                   </div>
 
-                  <p className="text-xs text-gray-400 flex items-center justify-center gap-1 mt-2">
-                    <Building2 className="w-3.5 h-3.5" /> 
-                    {doc.hospitalName ? `${doc.hospitalName} (${doc.chamberNo || 'Room N/A'})` : 'MediDesk Clinic'}
+                  <p className="text-xs text-gray-500 flex flex-col items-center justify-center gap-1 mt-3">
+                    <span className="flex items-center gap-1 font-medium"><Building2 className="w-3.5 h-3.5" /> {doc.hospitalName || 'MediDesk Clinic'}</span>
+                    {doc.chamberNo && <span className="text-gray-400">Room: {doc.chamberNo}</span>}
                   </p>
                 </div>
 
                 <div className="w-full mt-6 pt-4 border-t border-gray-50">
-                  {/* 🔴 এখানে Link এর বদলে onClick ইভেন্ট বসানো হয়েছে */}
                   <button
                     onClick={handleBookingClick}
-                    className="w-full py-3 px-4 bg-gray-50 hover:bg-blue-600 hover:text-white text-gray-700 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-sm"
+                    className="w-full py-3 px-4 bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300"
                   >
                     <Calendar className="w-4 h-4" /> Book Appointment
                   </button>

@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-// 💡 এখানে Loader2 যুক্ত করা হয়েছে
-import { Search, MapPin, Stethoscope, CalendarDays, Clock, User, Filter, ArrowRight, Loader2 } from 'lucide-react';
+import { Search, MapPin, Stethoscope, CalendarDays, Clock, Filter, ArrowRight, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface Doctor {
   _id: string;
   name: string;
   specialty: string;
+  image?: string;
   hospitalName?: string;
   chamberNo?: string;
   consultationFee: number;
@@ -20,18 +20,15 @@ export default function FindDoctorPage() {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // ফিল্টারিং স্টেট
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
   const [selectedHospital, setSelectedHospital] = useState('');
   const [selectedDay, setSelectedDay] = useState('');
 
-  // 🟢 ১. ডাটাবেজ থেকে সব ডাক্তার আনা
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-        // Note: যদি এই পেজটি পাবলিক হয়, তবে টোকেন ছাড়াই API কল করা যেতে পারে (ব্যাকএন্ডের ওপর নির্ভরশীল)
         const token = localStorage.getItem('token'); 
         const headers: Record<string, string> = token ? { 'Authorization': `Bearer ${token}` } : {};
 
@@ -49,12 +46,10 @@ export default function FindDoctorPage() {
     fetchDoctors();
   }, []);
 
-  // 🟢 ২. ডায়নামিক ফিল্টার অপশন তৈরি করা (ডুপ্লিকেট রিমুভ করে)
   const uniqueSpecialties = Array.from(new Set(doctors.map(d => d.specialty).filter(Boolean)));
   const uniqueHospitals = Array.from(new Set(doctors.map(d => d.hospitalName).filter(Boolean)));
   const daysOfWeek = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-  // 🟢 ৩. ফিল্টারিং লজিক (যেটা দিয়ে রিয়েল-টাইমে ডাটা ফিল্টার হবে)
   const filteredDoctors = doctors.filter(doc => {
     const matchesName = doc.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesSpecialty = selectedSpecialty ? doc.specialty === selectedSpecialty : true;
@@ -68,16 +63,12 @@ export default function FindDoctorPage() {
     <div className="min-h-screen bg-gray-50/50 pt-10 pb-20">
       <div className="max-w-6xl mx-auto px-4 space-y-8">
         
-        {/* Header Section */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-black text-gray-900 tracking-tight">Find Your Specialist</h1>
           <p className="text-gray-500 max-w-xl mx-auto">Book appointments with the best doctors in top hospitals. Filter by specialty, hospital, or available days.</p>
         </div>
 
-        {/* 🔍 Search and Filter Section */}
         <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-4">
-          
-          {/* Name Search */}
           <div className="relative">
             <Search className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
             <input 
@@ -89,10 +80,7 @@ export default function FindDoctorPage() {
             />
           </div>
 
-          {/* Filters Dropdowns */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            
-            {/* Specialty Filter */}
             <div className="relative">
               <Stethoscope className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
               <select 
@@ -105,7 +93,6 @@ export default function FindDoctorPage() {
               </select>
             </div>
 
-            {/* Hospital Filter */}
             <div className="relative">
               <MapPin className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
               <select 
@@ -118,7 +105,6 @@ export default function FindDoctorPage() {
               </select>
             </div>
 
-            {/* Day Filter */}
             <div className="relative">
               <CalendarDays className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
               <select 
@@ -130,11 +116,9 @@ export default function FindDoctorPage() {
                 {daysOfWeek.map(day => <option key={day} value={day}>{day}</option>)}
               </select>
             </div>
-
           </div>
         </div>
 
-        {/* 👨‍⚕️ Doctors Grid */}
         {isLoading ? (
           <div className="flex justify-center py-20"><Loader2 className="w-10 h-10 animate-spin text-blue-600" /></div>
         ) : filteredDoctors.length === 0 ? (
@@ -152,35 +136,41 @@ export default function FindDoctorPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredDoctors.map(doc => (
-              <div key={doc._id} className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow group flex flex-col justify-between h-full">
+              <div key={doc._id} className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between h-full">
                 
-                <div className="space-y-4">
-                  {/* Avatar & Basic Info */}
-                  <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center font-black text-xl shrink-0">
-                      {doc.name.charAt(0)}
+                <div className="space-y-5">
+                  {/* 🟢 আপডেট করা প্রিমিয়াম এভাটার ও ইনফো সেকশন */}
+                  <div className="flex items-center gap-4">
+                    <div className="relative w-20 h-20 shrink-0 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 font-black text-2xl overflow-hidden border-4 border-white shadow-md">
+                      {doc.image ? (
+                        <img src={doc.image} alt={doc.name} className="w-full h-full object-cover object-top" />
+                      ) : (
+                        doc.name.charAt(0)
+                      )}
                     </div>
-                    <div>
-                      <h3 className="font-bold text-gray-900 text-lg leading-tight">Dr. {doc.name}</h3>
-                      <p className="text-sm font-semibold text-blue-600 mt-0.5">{doc.specialty || 'General Physician'}</p>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-gray-900 text-lg leading-snug group-hover:text-blue-600 transition-colors">
+                        Dr. {doc.name}
+                      </h3>
+                      <p className="text-sm font-semibold text-blue-500 mt-1">{doc.specialty || 'General Physician'}</p>
                     </div>
                   </div>
 
-                  {/* Details */}
-                  <div className="space-y-2.5 pt-4 border-t border-gray-50">
+                  {/* ডিটেইলস সেকশন */}
+                  <div className="space-y-3 pt-4 border-t border-gray-100">
                     {doc.hospitalName && (
-                      <div className="flex items-start gap-2.5 text-sm text-gray-600">
+                      <div className="flex items-start gap-3 text-sm text-gray-600">
                         <MapPin className="w-4 h-4 shrink-0 text-gray-400 mt-0.5" />
-                        <span>{doc.hospitalName} {doc.chamberNo && <span className="text-gray-400">| Room: {doc.chamberNo}</span>}</span>
+                        <span className="leading-tight">{doc.hospitalName} {doc.chamberNo && <span className="text-gray-400">| Room: {doc.chamberNo}</span>}</span>
                       </div>
                     )}
                     
-                    <div className="flex items-start gap-2.5 text-sm text-gray-600">
+                    <div className="flex items-start gap-3 text-sm text-gray-600">
                       <CalendarDays className="w-4 h-4 shrink-0 text-gray-400 mt-0.5" />
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex flex-wrap gap-1.5">
                         {doc.availability?.filter(a => a.slots.length > 0).length > 0 ? (
                           doc.availability.filter(a => a.slots.length > 0).map((a, i) => (
-                            <span key={i} className="bg-gray-100 px-2 py-0.5 rounded text-xs font-medium text-gray-700">
+                            <span key={i} className="bg-gray-100 px-2 py-0.5 rounded text-xs font-semibold text-gray-600">
                               {a.day.slice(0,3)}
                             </span>
                           ))
@@ -190,17 +180,16 @@ export default function FindDoctorPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2.5 text-sm text-gray-600">
+                    <div className="flex items-center gap-3 text-sm text-gray-600">
                       <Clock className="w-4 h-4 shrink-0 text-gray-400" />
-                      <span className="font-semibold text-gray-900">৳ {doc.consultationFee || 500} <span className="text-gray-400 font-normal text-xs">/ visit</span></span>
+                      <span className="font-bold text-gray-900 text-base">৳ {doc.consultationFee || 500} <span className="text-gray-400 font-medium text-xs">/ visit</span></span>
                     </div>
                   </div>
                 </div>
 
-                {/* Action Button */}
                 <button 
                   onClick={() => router.push('/dashboard/patient/book-appointment')}
-                  className="mt-6 w-full bg-gray-50 hover:bg-blue-600 text-gray-700 hover:text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2 group-hover:shadow-md"
+                  className="mt-6 w-full bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white font-bold py-3.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
                 >
                   Book Appointment <ArrowRight className="w-4 h-4" />
                 </button>

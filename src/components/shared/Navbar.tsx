@@ -63,70 +63,41 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-4">
           
+          {/* 🔴 নতুন লোগো সেকশনটি এখানে মার্জ করা হয়েছে */}
           <div className="flex justify-start lg:w-0 lg:flex-1 shrink-0">
-            <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="bg-gradient-to-br from-blue-600 to-cyan-500 p-2 rounded-xl group-hover:shadow-lg group-hover:shadow-blue-500/30 transition-all duration-300">
-                <HeartPulse className="h-6 w-6 text-white" />
+            <Link href="/" className="flex items-center gap-3 group">
+              {/* Logo Icon with Pulse Animation */}
+              <div className="relative flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-600 p-2.5 rounded-xl shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/40 group-hover:-translate-y-0.5 transition-all duration-300">
+                <HeartPulse className="h-6 w-6 text-white group-hover:animate-pulse" strokeWidth={2.5} />
+                {/* Active Green Dot */}
+                <div className="absolute -top-1 -right-1 bg-white p-0.5 rounded-full">
+                  <div className="bg-green-500 w-2.5 h-2.5 rounded-full animate-pulse"></div>
+                </div>
               </div>
-              <span className="text-2xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-700">
-                Health<span className="text-blue-600">Sheba</span>
-              </span>
+              
+              {/* Logo Text */}
+              <div className="flex flex-col">
+                <span className="text-2xl font-extrabold tracking-tighter flex items-baseline">
+                  <span className="text-slate-900">Health</span>
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500 ml-0.5">
+                    Sheba
+                  </span>
+                  <span className="text-blue-600 text-3xl leading-none font-black">.</span>
+                </span>
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] -mt-1">
+                  Digital Healthcare
+                </span>
+              </div>
             </Link>
           </div>
+          {/* 🔴 লোগো সেকশন শেষ */}
 
           <nav className="hidden md:flex items-center space-x-1 lg:space-x-2">
             <Link href="/" className="px-3 py-2 text-sm font-bold text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all">
               Home
             </Link>
 
-            <Popover className="relative">
-              {({ open }) => (
-                <>
-                  <Popover.Button
-                    className={`
-                      ${open ? 'text-blue-600 bg-blue-50' : 'text-gray-600 hover:bg-blue-50 hover:text-blue-600'}
-                      group inline-flex items-center gap-1 px-3 py-2 text-sm font-bold rounded-full focus:outline-none transition-all
-                    `}
-                  >
-                    <span>Specialties</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
-                  </Popover.Button>
-
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-200"
-                    enterFrom="opacity-0 translate-y-2"
-                    enterTo="opacity-100 translate-y-0"
-                    leave="transition ease-in duration-150"
-                    leaveFrom="opacity-100 translate-y-0"
-                    leaveTo="opacity-0 translate-y-2"
-                  >
-                    <Popover.Panel className="absolute z-10 -ml-4 mt-4 w-screen max-w-md transform px-2 sm:px-0 lg:left-1/2 lg:ml-0 lg:-translate-x-1/2">
-                      <div className="overflow-hidden rounded-3xl shadow-xl ring-1 ring-gray-100 border border-gray-100">
-                        <div className="relative grid gap-2 bg-white/95 backdrop-blur-xl p-4">
-                          {specialties.map((item) => (
-                            <Link
-                              key={item.name}
-                              href={item.href}
-                              className="flex items-start rounded-2xl p-4 hover:bg-gray-50 transition-colors group/item"
-                            >
-                              <div className="bg-blue-50 p-2.5 rounded-xl group-hover/item:bg-blue-100 group-hover/item:text-blue-700 transition-colors">
-                                <item.icon className="h-5 w-5 text-blue-600" aria-hidden="true" />
-                              </div>
-                              <div className="ml-4">
-                                <p className="text-sm font-bold text-gray-900">{item.name}</p>
-                                <p className="mt-0.5 text-xs text-gray-500 font-medium">{item.description}</p>
-                              </div>
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    </Popover.Panel>
-                  </Transition>
-                </>
-              )}
-            </Popover>
-
+          
             <Link href="/find-doctor" className="px-3 py-2 text-sm font-bold text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all whitespace-nowrap">
               Find a Doctor
             </Link>

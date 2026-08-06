@@ -4,9 +4,8 @@ import { useState, useEffect } from 'react';
 import { 
   Users, Stethoscope, Calendar, DollarSign, Activity, UserPlus, 
   CheckCircle2, XCircle, Loader2, Clock, ClipboardList, FileText,
-  CalendarCheck, HeartPulse, PlusCircle
+  CalendarCheck, HeartPulse, PlusCircle, ArrowRight
 } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export default function SmartDashboardPage() {
@@ -15,11 +14,10 @@ export default function SmartDashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  // 🗄️ ড্যাশবোর্ডের ডাটা স্টেট
   const [stats, setStats] = useState({ revenue: 0, appointments: 0, doctors: 0, patients: 0, upcoming: 0, completed: 0, prescriptions: 0 });
   const [pendingDoctors, setPendingDoctors] = useState<any[]>([]);
   const [recentBookings, setRecentBookings] = useState<any[]>([]);
-  const [recentRx, setRecentRx] = useState<any[]>([]); // পেশেন্টদের প্রেসক্রিপশন রাখার স্টেট
+  const [recentRx, setRecentRx] = useState<any[]>([]); 
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -71,7 +69,6 @@ export default function SmartDashboardPage() {
             }
           }
           else if (profile.role === 'Patient') {
-            // 🌟 পেশেন্টদের জন্য অ্যাপয়েন্টমেন্ট এবং প্রেসক্রিপশন দুটিই ফেচ করা হচ্ছে
             const [apptRes, rxRes] = await Promise.all([
               fetch(`${apiUrl}/appointments`, { headers }),
               fetch(`${apiUrl}/prescriptions`, { headers })
@@ -90,7 +87,7 @@ export default function SmartDashboardPage() {
 
             if (rxRes.ok) {
               const prescriptions = await rxRes.json();
-              setRecentRx(prescriptions.slice(0, 4)); // ড্যাশবোর্ডে ৪টি প্রেসক্রিপশন দেখাব
+              setRecentRx(prescriptions.slice(0, 4));
               setStats(prev => ({ ...prev, prescriptions: prescriptions.length }));
             }
           }
@@ -146,18 +143,15 @@ export default function SmartDashboardPage() {
     );
   }
 
-  // ==========================================
-  // 💚 PATIENT DASHBOARD UI 
-  // ==========================================
   if (role === 'Patient') {
     return (
       <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 pb-10">
-        <div className="flex items-center justify-between bg-white p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden gap-4">
           <div className="relative z-10">
             <h1 className="text-3xl font-bold text-gray-900">Hello, {userName}! 👋</h1>
             <p className="text-gray-500 text-sm mt-2">Welcome to your personal health dashboard.</p>
           </div>
-          <button onClick={() => router.push('/dashboard/patient/book-appointment')} className="relative z-10 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-md">
+          <button onClick={() => router.push('/dashboard/patient/book-appointment')} className="relative z-10 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl text-sm font-semibold transition-all shadow-md">
             <PlusCircle className="w-5 h-5" /> Book Appointment
           </button>
           <div className="absolute right-0 top-0 w-64 h-64 bg-green-50 rounded-full -mr-20 -mt-20 opacity-50 pointer-events-none"></div>
@@ -188,15 +182,15 @@ export default function SmartDashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-          <div className="xl:col-span-2 bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="xl:col-span-2 bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
             <div className="p-6 border-b border-gray-50 flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                 <ClipboardList className="w-5 h-5 text-blue-600" /> My Appointments
               </h2>
             </div>
-            <div className="p-6 space-y-4 max-h-[400px] overflow-y-auto">
+            <div className="p-6 space-y-4 flex-1 overflow-y-auto max-h-[400px]">
               {recentBookings.length === 0 ? <p className="text-center text-gray-500 py-10">You have no appointments yet.</p> : recentBookings.map((appt) => (
-                <div key={appt._id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                <div key={appt._id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 gap-4">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold text-lg uppercase">Dr.</div>
                     <div>
@@ -204,14 +198,13 @@ export default function SmartDashboardPage() {
                       <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5"><Clock className="w-3.5 h-3.5" /> {appt.date} • {appt.time}</p>
                     </div>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase border ${appt.status === 'Completed' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-blue-100 text-blue-700 border-blue-200'}`}>{appt.status || 'Confirmed'}</span>
+                  <span className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase border text-center ${appt.status === 'Completed' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-blue-100 text-blue-700 border-blue-200'}`}>{appt.status || 'Confirmed'}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* 🌟 New Section: Recent Prescriptions */}
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
             <div className="p-6 border-b border-gray-50 flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                 <FileText className="w-5 h-5 text-purple-600" /> Recent Rx
@@ -220,7 +213,7 @@ export default function SmartDashboardPage() {
                 View All
               </button>
             </div>
-            <div className="p-6 space-y-4 max-h-[400px] overflow-y-auto">
+            <div className="p-6 space-y-4 flex-1 overflow-y-auto max-h-[400px]">
               {recentRx.length === 0 ? (
                 <p className="text-center text-gray-500 py-10">No prescriptions received yet.</p>
               ) : (
@@ -249,29 +242,26 @@ export default function SmartDashboardPage() {
     );
   }
 
-  // ==========================================
-  // 🩺 DOCTOR DASHBOARD UI
-  // ==========================================
   if (role === 'Doctor') {
     return (
       <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 pb-10">
-        <div className="flex items-center justify-between bg-white p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden gap-4">
           <div className="relative z-10">
             <h1 className="text-3xl font-bold text-gray-900">Welcome, Dr. {userName.replace(/^Dr\.\s*/i, '')} 👋</h1>
             <p className="text-gray-500 text-sm mt-2">Here is your clinical schedule and practice overview for today.</p>
           </div>
-          <button className="relative z-10 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-md">
-            <CalendarCheck className="w-4 h-4" /> My Schedule
+          <button className="relative z-10 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl text-sm font-semibold transition-all shadow-md">
+            <CalendarCheck className="w-5 h-5" /> My Schedule
           </button>
           <div className="absolute right-0 top-0 w-64 h-64 bg-blue-50 rounded-full -mr-20 -mt-20 opacity-50 pointer-events-none"></div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { title: "Today's Appointments", amount: stats.appointments, icon: Clock, color: "text-blue-600", bg: "bg-blue-50" },
+            { title: "Appointments", amount: stats.appointments, icon: Clock, color: "text-blue-600", bg: "bg-blue-50" },
             { title: "Total Patients", amount: stats.patients, icon: Users, color: "text-orange-600", bg: "bg-orange-50" },
-            { title: "Completed Sessions", amount: "12", icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50" },
-            { title: "Estimated Earnings", amount: `৳ ${stats.revenue.toLocaleString()}`, icon: DollarSign, color: "text-purple-600", bg: "bg-purple-50" }
+            { title: "Completed", amount: stats.completed || 0, icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50" },
+            { title: "Earnings", amount: `৳ ${stats.revenue.toLocaleString()}`, icon: DollarSign, color: "text-purple-600", bg: "bg-purple-50" }
           ].map((stat, i) => (
              <div key={i} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all">
                 <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color}`}><stat.icon className="w-7 h-7" /></div>
@@ -284,18 +274,18 @@ export default function SmartDashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-          <div className="xl:col-span-2 bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="xl:col-span-2 bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
             <div className="p-6 border-b border-gray-50 flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                 <ClipboardList className="w-5 h-5 text-blue-600" /> Today's Schedule
               </h2>
             </div>
-            <div className="p-6 space-y-4 max-h-[400px] overflow-y-auto">
+            <div className="p-6 space-y-4 flex-1 overflow-y-auto max-h-[400px]">
               {recentBookings.length === 0 ? (
                 <p className="text-center text-gray-500 py-10">No appointments scheduled for today.</p>
               ) : (
                 recentBookings.map((appt) => (
-                  <div key={appt._id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:border-blue-50 transition-colors">
+                  <div key={appt._id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:border-blue-50 transition-colors gap-4">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold text-lg uppercase">
                         {appt.patientId?.name?.charAt(0) || 'P'}
@@ -309,14 +299,14 @@ export default function SmartDashboardPage() {
                     </div>
                     
                     <div className="flex items-center gap-2">
-                      <span className={`px-3 py-1 text-xs font-bold uppercase border rounded-full ${appt.status === 'Completed' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-blue-100 text-blue-700 border-blue-200'}`}>
+                      <span className={`px-3 py-1.5 text-xs font-bold uppercase border rounded-full ${appt.status === 'Completed' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-blue-100 text-blue-700 border-blue-200'}`}>
                         {appt.status || 'Scheduled'}
                       </span>
                       
                       {appt.status !== 'Completed' && (
                         <button 
                           onClick={() => handleAppointmentStatus(appt._id, 'Completed')}
-                          className="p-1.5 bg-green-50 text-green-600 hover:bg-green-100 rounded-lg transition-colors border border-green-100 shadow-sm"
+                          className="p-2 bg-green-50 text-green-600 hover:bg-green-100 rounded-lg transition-colors border border-green-100 shadow-sm"
                           title="Mark as Completed"
                         >
                           <CheckCircle2 className="w-4 h-4" />
@@ -326,7 +316,7 @@ export default function SmartDashboardPage() {
                       {appt.status === 'Completed' && (
                         <button 
                           onClick={() => router.push(`/dashboard/prescriptions?apptId=${appt._id}&patientId=${appt.patientId?._id}`)}
-                          className="flex items-center gap-1 px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:shadow-md rounded-lg transition-all border border-indigo-100 shadow-sm"
+                          className="flex items-center gap-1 px-3 py-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:shadow-md rounded-lg transition-all border border-indigo-100 shadow-sm"
                           title="Write Prescription"
                         >
                           <FileText className="w-4 h-4" /> <span className="text-xs font-bold">Write Rx</span>
@@ -339,7 +329,7 @@ export default function SmartDashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
             <div className="p-6 border-b border-gray-50">
               <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                 <Activity className="w-5 h-5 text-green-600" /> Quick Actions
@@ -347,13 +337,16 @@ export default function SmartDashboardPage() {
             </div>
             <div className="p-6 space-y-3">
               <button onClick={() => router.push('/dashboard/prescriptions')} className="w-full flex items-center justify-between p-4 bg-blue-50 text-blue-700 rounded-2xl hover:bg-blue-100 transition border border-blue-100 cursor-pointer">
-                <span className="font-semibold flex items-center gap-2"><FileText className="w-4 h-4"/> Write Prescription</span>
+                <span className="font-semibold flex items-center gap-2"><FileText className="w-5 h-5"/> Write Prescription</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
               <button onClick={() => router.push('/dashboard/patients')} className="w-full flex items-center justify-between p-4 bg-purple-50 text-purple-700 rounded-2xl hover:bg-purple-100 transition border border-purple-100 cursor-pointer">
-                <span className="font-semibold flex items-center gap-2"><Users className="w-4 h-4"/> Patient Records</span>
+                <span className="font-semibold flex items-center gap-2"><Users className="w-5 h-5"/> Patient Records</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
               <button onClick={() => router.push('/dashboard/settings')} className="w-full flex items-center justify-between p-4 bg-orange-50 text-orange-700 rounded-2xl hover:bg-orange-100 transition border border-orange-100 cursor-pointer">
-                <span className="font-semibold flex items-center gap-2"><Calendar className="w-4 h-4"/> Update Availability</span>
+                <span className="font-semibold flex items-center gap-2"><Calendar className="w-5 h-5"/> Update Availability</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -362,14 +355,17 @@ export default function SmartDashboardPage() {
     );
   }
 
-  // ==========================================
-  // 👑 ADMIN DASHBOARD UI
-  // ==========================================
   return (
     <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 pb-10">
-      <div className="flex items-center justify-between">
-        <div><h1 className="text-3xl font-bold text-gray-900">Admin Overview</h1></div>
+      
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden gap-4">
+        <div className="relative z-10">
+          <h1 className="text-3xl font-bold text-gray-900">Hello Admin! 👑</h1>
+          <p className="text-gray-500 text-sm mt-2">Here is the overall system performance and overview.</p>
+        </div>
+        <div className="absolute right-0 top-0 w-64 h-64 bg-purple-50 rounded-full -mr-20 -mt-20 opacity-50 pointer-events-none"></div>
       </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
           { title: "Total Revenue", amount: `৳ ${stats.revenue.toLocaleString()}`, icon: DollarSign, color: "text-green-600", bg: "bg-green-50" },
@@ -386,28 +382,64 @@ export default function SmartDashboardPage() {
           </div>
         ))}
       </div>
+
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-        <div className="xl:col-span-2 bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+        
+        <div className="xl:col-span-2 bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
           <div className="p-6 border-b border-gray-50 flex items-center justify-between">
             <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
               <UserPlus className="w-5 h-5 text-blue-600" /> Pending Approvals
             </h2>
           </div>
-          <div className="p-6 space-y-4 max-h-[400px] overflow-y-auto">
+          <div className="p-6 space-y-4 flex-1 overflow-y-auto max-h-[400px]">
             {pendingDoctors.length === 0 ? <p className="text-center text-gray-500 py-10">No pending requests right now.</p> : pendingDoctors.map(doc => (
-              <div key={doc._id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
+              <div key={doc._id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold uppercase">{doc.name.charAt(0)}</div>
-                  <div><h4 className="font-bold text-gray-900">{doc.name}</h4></div>
+                  <div className="w-12 h-12 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold text-lg uppercase">{doc.name.charAt(0)}</div>
+                  <div>
+                    <h4 className="font-bold text-gray-900">{doc.name}</h4>
+                    <p className="text-xs text-gray-500">{doc.specialty || 'Doctor'}</p>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button onClick={() => handleDoctorStatus(doc._id, 'Approved')} className="p-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200" title="Approve"><CheckCircle2 className="w-5 h-5" /></button>
-                  <button onClick={() => handleDoctorStatus(doc._id, 'Rejected')} className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200" title="Reject"><XCircle className="w-5 h-5" /></button>
+                  <button onClick={() => handleDoctorStatus(doc._id, 'Approved')} className="flex items-center gap-1 px-4 py-2 bg-green-100 text-green-700 rounded-xl hover:bg-green-200 transition-colors font-semibold text-sm" title="Approve">
+                    <CheckCircle2 className="w-4 h-4" /> Approve
+                  </button>
+                  <button onClick={() => handleDoctorStatus(doc._id, 'Rejected')} className="flex items-center gap-1 px-4 py-2 bg-red-100 text-red-700 rounded-xl hover:bg-red-200 transition-colors font-semibold text-sm" title="Reject">
+                    <XCircle className="w-4 h-4" /> Reject
+                  </button>
                 </div>
               </div>
             ))}
           </div>
         </div>
+
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
+          <div className="p-6 border-b border-gray-50 flex items-center justify-between">
+            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <Clock className="w-5 h-5 text-purple-600" /> Recent Bookings
+            </h2>
+          </div>
+          <div className="p-6 space-y-4 flex-1 overflow-y-auto max-h-[400px]">
+            {recentBookings.length === 0 ? (
+              <p className="text-center text-gray-500 py-10">No recent bookings found.</p>
+            ) : (
+              recentBookings.map((appt) => (
+                <div key={appt._id} className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-gray-500">{appt.date}</span>
+                    <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md ${appt.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
+                      {appt.status || 'Active'}
+                    </span>
+                  </div>
+                  <h4 className="font-bold text-gray-900 text-sm truncate">Dr. {appt.doctorId?.name || 'Doctor'}</h4>
+                  <p className="text-xs text-gray-500 truncate">Patient: {appt.patientId?.name || 'Patient'}</p>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
       </div>
     </div>
   );

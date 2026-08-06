@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { 
-  User, DollarSign, Clock, Save, Loader2, Plus, Trash2, CalendarDays
+  User, DollarSign, Clock, Save, Loader2, Plus, Trash2, CalendarDays, Upload
 } from 'lucide-react';
 
 const DAYS_OF_WEEK = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -12,14 +12,13 @@ export default function SettingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  // ফর্মের স্টেট
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [image, setImage] = useState(''); 
   const [specialty, setSpecialty] = useState('');
   const [hospitalName, setHospitalName] = useState('');
   const [consultationFee, setConsultationFee] = useState<number>(500);
   
-  // 🕒 Availability State
   const [availability, setAvailability] = useState(
     DAYS_OF_WEEK.map(day => ({ day, slots: [] as string[] }))
   );
@@ -39,13 +38,12 @@ export default function SettingsPage() {
           setRole(data.role);
           setName(data.name || '');
           setPhone(data.phone || '');
+          setImage(data.image || ''); 
           setSpecialty(data.specialty || '');
           setHospitalName(data.hospitalName || '');
           setConsultationFee(data.consultationFee || 500);
           
-          // ডাটাবেজে যদি আগে থেকে শিডিউল থাকে, তবে সেটি সেভ করবে
           if (data.availability && data.availability.length > 0) {
-            // ডাটাবেজের ডাটা দিয়ে আমাদের ডিফল্ট স্টেট মার্জ করা
             const updatedAvailability = DAYS_OF_WEEK.map(day => {
               const found = data.availability.find((a: any) => a.day === day);
               return found ? { day, slots: found.slots } : { day, slots: [] };
@@ -62,21 +60,34 @@ export default function SettingsPage() {
     fetchProfile();
   }, []);
 
-  // নতুন টাইম স্লট যুক্ত করা
+  // 🟢 পিসি থেকে ছবি সিলেক্ট করে প্রসেস করার ফাংশন
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) { // 2MB Limit
+        alert("Please select an image smaller than 2MB.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const addSlot = (dayIndex: number) => {
     const newAvail = [...availability];
-    newAvail[dayIndex].slots.push('10:00 AM'); // ডিফল্ট টাইম
+    newAvail[dayIndex].slots.push('10:00 AM');
     setAvailability(newAvail);
   };
 
-  // টাইম স্লট আপডেট করা
   const updateSlot = (dayIndex: number, slotIndex: number, value: string) => {
     const newAvail = [...availability];
     newAvail[dayIndex].slots[slotIndex] = value;
     setAvailability(newAvail);
   };
 
-  // টাইম স্লট ডিলিট করা
   const removeSlot = (dayIndex: number, slotIndex: number) => {
     const newAvail = [...availability];
     newAvail[dayIndex].slots.splice(slotIndex, 1);
@@ -91,8 +102,7 @@ export default function SettingsPage() {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
       
       const payload = {
-        name, phone, specialty, hospitalName, consultationFee, 
-        // শুধুমাত্র যে দিনগুলোতে স্লট আছে সেগুলোই ফিল্টার করে ডাটাবেজে পাঠাব
+        name, phone, image, specialty, hospitalName, consultationFee,
         availability: availability.filter(a => a.slots.length > 0)
       };
 
@@ -123,8 +133,12 @@ export default function SettingsPage() {
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500 pb-10">
       
       <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-4">
-        <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center">
-          <User className="w-8 h-8" />
+        <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center overflow-hidden shrink-0 border border-blue-100">
+          {image ? (
+            <img src={image} alt="Profile" className="w-full h-full object-cover" />
+          ) : (
+            <User className="w-8 h-8" />
+          )}
         </div>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Profile & Settings</h1>
@@ -134,25 +148,46 @@ export default function SettingsPage() {
 
       <form onSubmit={handleSaveProfile} className="space-y-8">
         
-        {/* বেসিক ইনফরমেশন (সবার জন্য) */}
         <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
           <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Basic Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
-              <input type="text" value={name} onChange={(e) => setName(e.target.value)} required className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none" />
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} required className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none transition-all" />
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">Phone Number</label>
-              <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none" />
+              <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none transition-all" />
             </div>
+            
+            {/* 🟢 পিসি থেকে ছবি সিলেক্ট করার অপশন */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Profile Picture</label>
+              <div className="flex items-center gap-4">
+                <label 
+                  htmlFor="image-upload" 
+                  className="cursor-pointer flex items-center gap-2 bg-white border border-gray-200 hover:border-blue-600 hover:text-blue-600 text-gray-700 font-bold px-5 py-2.5 rounded-xl transition-all shadow-sm"
+                >
+                  <Upload className="w-5 h-5" />
+                  Browse from PC
+                </label>
+                <input 
+                  type="file" 
+                  id="image-upload" 
+                  accept="image/*" 
+                  onChange={handleImageUpload} 
+                  className="hidden" 
+                />
+                {image && <span className="text-sm font-bold text-green-600 bg-green-50 px-3 py-1 rounded-lg">Image Selected!</span>}
+              </div>
+              <p className="text-xs text-gray-400 mt-2 font-medium">Please upload a square image (JPG, PNG). Maximum size: 2MB.</p>
+            </div>
+
           </div>
         </div>
 
-        {/* 🩺 শুধুমাত্র ডাক্তারদের জন্য সেটিংস */}
         {role === 'Doctor' && (
           <>
-            {/* প্রফেশনাল ইনফো ও ফি */}
             <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
               <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2 flex items-center gap-2">
                 <DollarSign className="w-5 h-5 text-green-600" /> Professional Details & Fees
@@ -173,7 +208,6 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            {/* 🕒 Availability / Time Slots */}
             <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
               <div className="flex items-center justify-between border-b border-gray-100 pb-2">
                 <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
